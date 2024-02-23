@@ -1,0 +1,27 @@
+version: '3'
+services:
+  positions-app:
+    build:
+      context: .
+      dockerfile: ./apps/positions/Dockerfile
+      target: development
+    command: pnpm run start:dev positions
+    env_file: ./apps/positions/.env.development
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - postgres
+    # networks:
+    #   - my-network
+
+  postgres:
+    image: postgres
+    env_file:
+      - .env
+    ports:
+      - '5432:5432'
+
+networks:
+  my-network:
