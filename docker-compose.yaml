@@ -6,7 +6,8 @@ services:
       dockerfile: ./apps/positions/Dockerfile
       target: development
     command: pnpm run start:dev positions
-    env_file: ./apps/positions/.env.development
+    env_file:
+      - ./apps/positions/.env.development
     ports:
       - '3000:3000'
     volumes:
@@ -20,7 +21,8 @@ services:
       dockerfile: ./apps/auth/Dockerfile
       target: development
     command: pnpm run start:dev auth
-    env_file: ./apps/auth/.env.development
+    env_file:
+      - ./apps/auth/.env.development
     ports:
       - '3001:3001'
     volumes:
