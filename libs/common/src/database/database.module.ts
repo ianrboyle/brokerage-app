@@ -37,7 +37,6 @@ import { APP_FILTER } from '@nestjs/core';
           retryAttempts: 10,
           retryDelay: 3000,
         };
-        console.log(dbConnectionOptions);
         return dbConnectionOptions as TypeOrmModuleOptions;
       },
     }),

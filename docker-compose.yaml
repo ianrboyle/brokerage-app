@@ -13,8 +13,20 @@ services:
       - .:/usr/src/app
     depends_on:
       - postgres
-    # networks:
-    #   - my-network
+
+  auth-app:
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    command: pnpm run start:dev auth
+    env_file: ./apps/auth/.env.development
+    ports:
+      - '3001:3001'
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres
@@ -22,6 +34,3 @@ services:
       - .env
     ports:
       - '5432:5432'
-
-networks:
-  my-network:

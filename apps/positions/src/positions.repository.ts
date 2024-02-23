@@ -10,9 +10,9 @@ export class PositionsRepository extends AbstractRepository<Position> {
 
   constructor(
     @InjectRepository(Position)
-    positionRepository: Repository<Position>,
+    positionsRepository: Repository<Position>,
     entityManager: EntityManager,
   ) {
-    super(positionRepository, entityManager);
+    super(positionsRepository, entityManager);
   }
 }

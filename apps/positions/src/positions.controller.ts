@@ -17,7 +17,6 @@ export class PositionsController {
 
   @Post()
   create(@Body() createPositionDto: CreatePositionDto) {
-    console.log('POSITION DTO:', createPositionDto);
     return this.positionsService.create(createPositionDto);
   }
 
