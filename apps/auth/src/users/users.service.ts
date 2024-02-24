@@ -7,6 +7,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcryptjs';
+import { GetUserDto } from './dto/get-user.dto';
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
@@ -35,5 +36,9 @@ export class UsersService {
       throw new UnauthorizedException('Credentials are not valid.');
     }
     return user;
+  }
+
+  async getUser(getUserDto: GetUserDto) {
+    return this.usersRepository.findOne(getUserDto);
   }
 }
