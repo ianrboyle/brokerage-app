@@ -7,14 +7,14 @@ import { Position } from './entities/position.entity';
 @Injectable()
 export class PositionsService {
   constructor(private readonly positionsRepository: PositionsRepository) {}
-  create(createPositionDto: CreatePositionDto) {
+  async create(createPositionDto: CreatePositionDto, userId: number) {
     const position = new Position({
       ...createPositionDto,
     });
-    position.userId = 1;
+    position.userId = userId;
     position.companyProfileId = 1;
     position.industryId = 1;
-    return this.positionsRepository.create(position);
+    return await this.positionsRepository.create(position);
   }
 
   findAll() {

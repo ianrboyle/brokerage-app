@@ -1,6 +1,6 @@
 version: '3'
 services:
-  positions-app:
+  positions_app:
     build:
       context: .
       dockerfile: ./apps/positions/Dockerfile
@@ -14,8 +14,11 @@ services:
       - .:/usr/src/app
     depends_on:
       - postgres
+    networks:
+      - positions_db
+      - auth_db
 
-  auth-app:
+  auth_app:
     build:
       context: .
       dockerfile: ./apps/auth/Dockerfile
@@ -29,6 +32,9 @@ services:
       - .:/usr/src/app
     depends_on:
       - postgres
+    networks:
+      - positions_db
+      - auth_db
 
   postgres:
     image: postgres
@@ -36,3 +42,12 @@ services:
       - .env
     ports:
       - '5432:5432'
+    networks:
+      - positions_db
+      - auth_db
+
+networks:
+  positions_db:
+    name: positions_db
+  auth_db:
+    name: auth_db

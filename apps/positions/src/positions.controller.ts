@@ -6,27 +6,35 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { PositionsService } from './positions.service';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
+import { CurrentUser, JwtAuthGuard } from '@app/common';
+import { User } from '@app/common';
 
 @Controller('positions')
 export class PositionsController {
   constructor(private readonly positionsService: PositionsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createPositionDto: CreatePositionDto) {
-    return this.positionsService.create(createPositionDto);
+  async create(
+    @Body() createPositionDto: CreatePositionDto,
+    @CurrentUser() user: User,
+  ) {
+    const userId = user.id;
+    return await this.positionsService.create(createPositionDto, userId);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.positionsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.positionsService.findOne(+id);
   }
 
