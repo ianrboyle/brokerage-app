@@ -14,11 +14,11 @@ import { UpdatePositionDto } from './dto/update-position.dto';
 import { CurrentUser, JwtAuthGuard } from '@app/common';
 import { User } from '@app/common';
 
+@UseGuards(JwtAuthGuard)
 @Controller('positions')
 export class PositionsController {
   constructor(private readonly positionsService: PositionsService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post()
   async create(
     @Body() createPositionDto: CreatePositionDto,
