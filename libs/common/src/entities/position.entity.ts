@@ -1,5 +1,5 @@
-import { Column, Entity } from 'typeorm';
-import { AbstractEntity } from '@app/common';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { AbstractEntity, User } from '@app/common';
 
 @Entity()
 export class Position extends AbstractEntity<Position> {
@@ -18,6 +18,6 @@ export class Position extends AbstractEntity<Position> {
   @Column()
   companyProfileId: number;
 
-  @Column()
-  userId: number;
+  @ManyToOne(() => User, (user) => user.positions)
+  user: User;
 }

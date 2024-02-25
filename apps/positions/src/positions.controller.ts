@@ -24,8 +24,7 @@ export class PositionsController {
     @Body() createPositionDto: CreatePositionDto,
     @CurrentUser() user: User,
   ) {
-    const userId = user.id;
-    return await this.positionsService.create(createPositionDto, userId);
+    return await this.positionsService.create(createPositionDto, user);
   }
 
   @Get()

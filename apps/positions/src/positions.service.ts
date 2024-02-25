@@ -1,27 +1,24 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 import { PositionsRepository } from './positions.repository';
-import { Position } from './entities/position.entity';
-import { ClientProxy } from '@nestjs/microservices';
-import { COMPANY_PROFILES_SERVICE, CompanyProfile } from '@app/common';
-import { firstValueFrom } from 'rxjs';
+import { Position, User } from '@app/common';
+import { CompanyProfilesProxy } from './company-profiles.proxy';
 
 @Injectable()
 export class PositionsService {
   constructor(
     private readonly positionsRepository: PositionsRepository,
-    @Inject(COMPANY_PROFILES_SERVICE)
-    private readonly companyProfilesService: ClientProxy,
+    private readonly companyProfilesProxy: CompanyProfilesProxy,
   ) {}
-  async create(createPositionDto: CreatePositionDto, userId: number) {
-    const profile = await this.getOrCreateCompanyProfile(
+  async create(createPositionDto: CreatePositionDto, user: User) {
+    const profile = await this.companyProfilesProxy.getOrCreateCompanyProfile(
       createPositionDto.symbol,
     );
     const position = new Position({
       ...createPositionDto,
     });
-    position.userId = userId;
+    position.user = user;
     position.companyProfileId = profile.id;
     position.industryId = 1;
     return await this.positionsRepository.create(position);
@@ -41,32 +38,5 @@ export class PositionsService {
 
   remove(id: number) {
     return this.positionsRepository.findOneAndDelete({ id });
-  }
-
-  private async getCompanyProfile(symbol: string): Promise<CompanyProfile> {
-    const getProfileResponse = this.companyProfilesService.send(
-      'get_profile',
-      symbol,
-    );
-
-    return await firstValueFrom<CompanyProfile>(getProfileResponse);
-  }
-
-  private async createCompanyProfile(symbol: string): Promise<CompanyProfile> {
-    const createProfileResponse = this.companyProfilesService.send(
-      'create_new_profile',
-      symbol,
-    );
-
-    return await firstValueFrom<CompanyProfile>(createProfileResponse);
-  }
-
-  private async getOrCreateCompanyProfile(symbol: string) {
-    const profile = await this.getCompanyProfile(symbol);
-    if (!profile) {
-      return await this.createCompanyProfile(symbol);
-    }
-
-    return profile;
   }
 }

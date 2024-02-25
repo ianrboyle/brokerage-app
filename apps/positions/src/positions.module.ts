@@ -6,17 +6,19 @@ import {
   LoggerModule,
   AUTH_SERVICE,
   COMPANY_PROFILES_SERVICE,
+  Position,
+  User,
 } from '@app/common';
-import { Position } from './entities/position.entity';
 import { PositionsRepository } from './positions.repository';
 import * as Joi from 'joi';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { CompanyProfilesProxy } from './company-profiles.proxy';
 
 @Module({
   imports: [
     DatabaseModule,
-    DatabaseModule.forFeature([Position]),
+    DatabaseModule.forFeature([Position, User]),
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
@@ -54,6 +56,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     ]),
   ],
   controllers: [PositionsController],
-  providers: [PositionsService, PositionsRepository],
+  providers: [PositionsService, PositionsRepository, CompanyProfilesProxy],
 })
 export class PositionsModule {}

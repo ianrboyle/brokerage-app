@@ -41,13 +41,14 @@ export class FinancialModelingPrepService {
   };
 
   setDefaultValues(profile: Profile) {
-    profile.sector === '' || !profile.sector
-      ? 'Default Sector'
-      : profile.sector;
-
-    profile.industry === '' || !profile.industry
-      ? 'Default Industry'
-      : profile.industry;
+    profile.sector =
+      profile.sector === '' || !profile.sector
+        ? 'Default Sector'
+        : profile.sector;
+    profile.industry =
+      profile.industry === '' || !profile.industry
+        ? 'Default Industry'
+        : profile.industry;
     return profile;
   }
 }

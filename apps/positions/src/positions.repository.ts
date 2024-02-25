@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AbstractRepository } from '@app/common';
-import { Position } from './entities/position.entity';
+import { AbstractRepository, Position } from '@app/common';
+
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
