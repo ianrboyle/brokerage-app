@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CompanyProfilesService } from './company-profiles.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
@@ -23,10 +17,5 @@ export class CompanyProfilesController {
   @UsePipes(new ValidationPipe())
   async getCompanyProfile(@Payload() data: string) {
     return this.companyProfilesService.findBySymbol(data);
-  }
-
-  @Get('/:symbol')
-  async getPositionById(@Param('symbol') symbol: string) {
-    return await this.companyProfilesService.findBySymbol(symbol);
   }
 }
