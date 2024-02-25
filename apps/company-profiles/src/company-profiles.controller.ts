@@ -17,13 +17,11 @@ export class CompanyProfilesController {
   @MessagePattern('create_new_profile')
   @UsePipes(new ValidationPipe())
   async createNewCompanyProfile(@Payload() data: string) {
-    console.log('CREATING COMPANY PROFILE: ');
     return this.companyProfilesService.createNew(data);
   }
   @MessagePattern('get_profile')
   @UsePipes(new ValidationPipe())
   async getCompanyProfile(@Payload() data: string) {
-    console.log('GETTING COMPANY PROFILE: ');
     return this.companyProfilesService.findBySymbol(data);
   }
 
