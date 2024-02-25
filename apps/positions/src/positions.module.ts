@@ -1,7 +1,12 @@
 import { Module } from '@nestjs/common';
 import { PositionsService } from './positions.service';
 import { PositionsController } from './positions.controller';
-import { DatabaseModule, LoggerModule, AUTH_SERVICE } from '@app/common';
+import {
+  DatabaseModule,
+  LoggerModule,
+  AUTH_SERVICE,
+  COMPANY_PROFILES_SERVICE,
+} from '@app/common';
 import { Position } from './entities/position.entity';
 import { PositionsRepository } from './positions.repository';
 import * as Joi from 'joi';
@@ -31,6 +36,17 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           options: {
             host: configService.get('AUTH_HOST'),
             port: configService.get('AUTH_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: COMPANY_PROFILES_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('COMPANY_PROFILES_HOST'),
+            port: configService.get('COMPANY_PROFILES_PORT'),
           },
         }),
         inject: [ConfigService],

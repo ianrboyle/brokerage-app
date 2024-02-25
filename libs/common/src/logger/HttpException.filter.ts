@@ -38,7 +38,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       exceptionName: exception?.name,
     };
 
-    console.log(JSON.stringify(exception));
+    console.error('ERROR MESSAGE: ', JSON.stringify(exception));
     this.loggerService.log(log);
     response.status(statusCode).json({
       statusCode: statusCode,
