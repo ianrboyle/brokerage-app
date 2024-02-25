@@ -1,32 +1,33 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PositionsService } from './positions.service';
 import { PositionsRepository } from './positions.repository';
-import { COMPANY_PROFILES_SERVICE, Position, User } from '@app/common';
-import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
-import { Observable, of } from 'rxjs';
+import { COMPANY_PROFILES_SERVICE, User } from '@app/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { CompanyProfilesProxy } from './company-profiles.proxy';
+import { CreatePositionDto } from './dto/create-position.dto';
 
 describe('PositionsService', () => {
   let service: PositionsService;
   let fakePositionsRepo: Partial<PositionsRepository>;
-  let fakeCompanyProfilesServiceClientProxy: Partial<ClientProxy>;
+  let fakeCompanyProfilesServiceProxy: Partial<CompanyProfilesProxy>;
   beforeEach(async () => {
     fakePositionsRepo = {
       create: () => {
         return Promise.resolve({
           id: 1,
-          symbol: 'AAPL',
+          symbol: 'TEST',
           quantity: 10,
           costPerShare: 100,
           user: mockUserOne,
           industryId: 1,
-          companyProfileId: 1,
+          companyProfileId: 1234,
         });
       },
     };
 
-    fakeCompanyProfilesServiceClientProxy = {
-      send: () => {
-        return of(fakeCompanyProfile) as Observable<any>;
+    fakeCompanyProfilesServiceProxy = {
+      getOrCreateCompanyProfile: () => {
+        return Promise.resolve(fakeCompanyProfile);
       },
     };
 
@@ -53,8 +54,8 @@ describe('PositionsService', () => {
           useValue: fakePositionsRepo,
         },
         {
-          provide: ClientProxy,
-          useValue: fakeCompanyProfilesServiceClientProxy,
+          provide: CompanyProfilesProxy,
+          useValue: fakeCompanyProfilesServiceProxy,
         },
       ],
     }).compile();
@@ -66,32 +67,30 @@ describe('PositionsService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a new companyProfile', async () => {
-    fakeCompanyProfilesServiceClientProxy.send = () => {
-      return of(fakeCompanyProfile) as Observable<any>;
-
-      const profile = service.createCompanyProfile('AAPL');
+  it('should create a positions', async () => {
+    const createPositionDto: CreatePositionDto = {
+      symbol: 'TEST',
+      quantity: 0,
+      costPerShare: 0,
+      companyProfileId: 0,
+      industryId: 0,
     };
+
+    const position = await service.create(createPositionDto, mockUserOne);
+    expect(position.companyProfileId).toEqual(fakeCompanyProfile.id);
+    expect(position.user).toEqual(mockUserOne);
   });
+
   const mockUserOne: User = {
     id: 1,
     email: 'email@test.com',
     password: 'password',
     positions: [],
   };
-  const mockPosition1: Position = {
-    id: 1,
-    symbol: 'AAPL',
-    quantity: 10,
-    costPerShare: 100,
-    user: mockUserOne,
-    industryId: 1,
-    companyProfileId: 1,
-  };
 
   const fakeCompanyProfile = {
-    id: 1,
-    symbol: 'AAPL',
+    id: 1234,
+    symbol: 'TEST',
     price: 150.5,
     companyName: '',
     industry: '',

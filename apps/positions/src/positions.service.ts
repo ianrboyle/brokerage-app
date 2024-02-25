@@ -15,11 +15,13 @@ export class PositionsService {
     const profile = await this.companyProfilesProxy.getOrCreateCompanyProfile(
       createPositionDto.symbol,
     );
+
     const position = new Position({
       ...createPositionDto,
     });
     position.user = user;
     position.companyProfileId = profile.id;
+
     position.industryId = 1;
     return await this.positionsRepository.create(position);
   }
