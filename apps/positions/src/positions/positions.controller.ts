@@ -9,8 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PositionsService } from './positions.service';
-import { CreatePositionDto } from './dto/create-position.dto';
-import { UpdatePositionDto } from './dto/update-position.dto';
+import { CreatePositionDto } from '../dto/create-position.dto';
+import { UpdatePositionDto } from '../dto/update-position.dto';
 import { CurrentUser, JwtAuthGuard } from '@app/common';
 import { User } from '@app/common';
 

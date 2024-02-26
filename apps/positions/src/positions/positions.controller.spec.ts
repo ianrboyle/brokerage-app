@@ -2,11 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PositionsController } from './positions.controller';
 import { PositionsService } from './positions.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import {
-  AUTH_SERVICE,
-  COMPANY_PROFILES_SERVICE,
-  Position,
-} from '../../../libs/common/src';
+import { AUTH_SERVICE, COMPANY_PROFILES_SERVICE, Position } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 
 describe('PositionsController', () => {

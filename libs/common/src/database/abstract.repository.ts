@@ -7,7 +7,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   protected abstract readonly logger: Logger;
   constructor(
     private readonly entityRepository: Repository<T>,
-    private readonly entityManager: EntityManager,
+    protected readonly entityManager: EntityManager,
   ) {}
 
   async create(entity: T): Promise<T> {

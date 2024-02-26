@@ -13,7 +13,7 @@ import { PositionsRepository } from './positions.repository';
 import * as Joi from 'joi';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { CompanyProfilesProxy } from './company-profiles.proxy';
+import { CompanyProfilesProxy } from '../company-profiles.proxy';
 
 @Module({
   imports: [

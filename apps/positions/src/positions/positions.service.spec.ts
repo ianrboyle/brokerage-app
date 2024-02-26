@@ -3,13 +3,19 @@ import { PositionsService } from './positions.service';
 import { PositionsRepository } from './positions.repository';
 import { COMPANY_PROFILES_SERVICE, User } from '@app/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { CompanyProfilesProxy } from './company-profiles.proxy';
-import { CreatePositionDto } from './dto/create-position.dto';
+import { CompanyProfilesProxy } from '../company-profiles.proxy';
+import { CreatePositionDto } from '../dto/create-position.dto';
+import { SectorsService } from '../sectors/sectors.service';
+import { IndustriesService } from '../industries/industries.service';
+import { Sector } from '../sectors/sector.entity';
+import { Industry } from '../industries/industries.entity';
 
 describe('PositionsService', () => {
   let service: PositionsService;
   let fakePositionsRepo: Partial<PositionsRepository>;
   let fakeCompanyProfilesServiceProxy: Partial<CompanyProfilesProxy>;
+  let fakeSectorsService: Partial<SectorsService>;
+  let fakeIndustriesService: Partial<IndustriesService>;
   beforeEach(async () => {
     fakePositionsRepo = {
       create: () => {
@@ -31,6 +37,34 @@ describe('PositionsService', () => {
       },
     };
 
+    fakeSectorsService = {
+      getOrCreateSector: () => {
+        const sector: Sector = {
+          sectorName: 'test sector',
+          industries: [],
+          id: 1,
+        };
+
+        return Promise.resolve(sector);
+      },
+    };
+    fakeIndustriesService = {
+      getOrCreateIndustry: () => {
+        const sector: Sector = {
+          sectorName: 'test sector',
+          industries: [],
+          id: 1,
+        };
+
+        const industry: Industry = {
+          industryName: '',
+          sector: sector,
+          id: 0,
+        };
+
+        return Promise.resolve(industry);
+      },
+    };
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         // Import the necessary modules
@@ -56,6 +90,14 @@ describe('PositionsService', () => {
         {
           provide: CompanyProfilesProxy,
           useValue: fakeCompanyProfilesServiceProxy,
+        },
+        {
+          provide: SectorsService,
+          useValue: fakeSectorsService,
+        },
+        {
+          provide: IndustriesService,
+          useValue: fakeIndustriesService,
         },
       ],
     }).compile();

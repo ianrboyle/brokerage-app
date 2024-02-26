@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { PositionsModule } from './../src/positions.module';
+import { PositionsModule } from '../src/positions/positions.module';
 
 describe('PositionsController (e2e)', () => {
   let app: INestApplication;

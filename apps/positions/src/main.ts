@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { PositionsModule } from './positions.module';
+import { PositionsModule } from './positions/positions.module';
 import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import * as cookieParser from 'cookie-parser';
