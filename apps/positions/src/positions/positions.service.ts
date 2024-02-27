@@ -6,6 +6,7 @@ import { Position, User } from '@app/common';
 import { CompanyProfilesProxy } from '../company-profiles.proxy';
 import { SectorsService } from '../sectors/sectors.service';
 import { IndustriesService } from '../industries/industries.service';
+import { FindOptionsWhere } from 'typeorm';
 
 @Injectable()
 export class PositionsService {
@@ -38,6 +39,11 @@ export class PositionsService {
 
   findAll() {
     return this.positionsRepository.find({});
+  }
+
+  async getUserPositions(userId: number) {
+    const whereClause: FindOptionsWhere<Position> = { user: { id: userId } };
+    return await this.positionsRepository.find(whereClause);
   }
 
   findOne(id: number) {

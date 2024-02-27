@@ -28,8 +28,8 @@ export class PositionsController {
   }
 
   @Get()
-  async findAll() {
-    return this.positionsService.findAll();
+  async getUserPositions(@CurrentUser() user: User) {
+    return this.positionsService.getUserPositions(user.id);
   }
 
   @Get(':id')

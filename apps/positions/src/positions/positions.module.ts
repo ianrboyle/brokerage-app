@@ -14,6 +14,8 @@ import * as Joi from 'joi';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CompanyProfilesProxy } from '../company-profiles.proxy';
+import { SectorsModule } from '../sectors/sectors.module';
+import { IndustriesModule } from '../industries/industries.module';
 
 @Module({
   imports: [
@@ -54,6 +56,8 @@ import { CompanyProfilesProxy } from '../company-profiles.proxy';
         inject: [ConfigService],
       },
     ]),
+    SectorsModule,
+    IndustriesModule,
   ],
   controllers: [PositionsController],
   providers: [PositionsService, PositionsRepository, CompanyProfilesProxy],
