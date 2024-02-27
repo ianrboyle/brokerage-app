@@ -16,11 +16,12 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CompanyProfilesProxy } from '../company-profiles.proxy';
 import { SectorsModule } from '../sectors/sectors.module';
 import { IndustriesModule } from '../industries/industries.module';
+import { Industry } from '../industries/industries.entity';
 
 @Module({
   imports: [
     DatabaseModule,
-    DatabaseModule.forFeature([Position, User]),
+    DatabaseModule.forFeature([Position, User, Industry]),
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({

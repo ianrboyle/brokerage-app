@@ -11,11 +11,13 @@ import {
 import { PositionsService } from './positions.service';
 import { CreatePositionDto } from '../dto/create-position.dto';
 import { UpdatePositionDto } from '../dto/update-position.dto';
-import { CurrentUser, JwtAuthGuard } from '@app/common';
-import { User } from '@app/common';
+import { CurrentUser, JwtAuthGuard, Position, User } from '@app/common';
+import { PositionDto } from '../dto/position-dto';
+import { Serialize } from '@app/common';
 
 @UseGuards(JwtAuthGuard)
 @Controller('positions')
+// @Serialize(PositionDto)
 export class PositionsController {
   constructor(private readonly positionsService: PositionsService) {}
 
@@ -29,7 +31,15 @@ export class PositionsController {
 
   @Get()
   async getUserPositions(@CurrentUser() user: User) {
-    return this.positionsService.getUserPositions(user.id);
+    const positions: Position[] = await this.positionsService.getUserPositions(
+      user.id,
+    );
+    return positions;
+  }
+  @Get('/sectors')
+  async getPositionsBySector(@CurrentUser() user: User) {
+    const positions = await this.positionsService.getPositionsBySector(user.id);
+    return positions;
   }
 
   @Get(':id')
