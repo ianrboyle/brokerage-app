@@ -338,16 +338,6 @@ describe('PortfolioService', () => {
     };
   };
 
-  const getUpdatedMockPortfolioPosition = (): PortfolioPosition => {
-    return {
-      companyName: 'Test one',
-      currentValue: 10,
-      totalCostBasis: 7,
-      percentGain: 42.86,
-      quantity: 2,
-    };
-  };
-
   const getMockPortfolioIndustry = (): PortfolioIndustry => {
     return {
       currentValue: 0,
@@ -365,11 +355,20 @@ describe('PortfolioService', () => {
       percentGain: 0,
     };
   };
+  const getUpdatedMockPortfolioPosition = (): PortfolioPosition => {
+    return {
+      companyName: 'Test one',
+      currentValue: 10,
+      totalCostBasis: 7,
+      percentGain: 42.86,
+      quantity: 2,
+    };
+  };
 
   const getUpdatedMockPortfolioIndustry = (): PortfolioIndustry => {
     return {
       currentValue: 10,
-      totalCostBasis: 15,
+      totalCostBasis: 7,
       positions: { TEST: getUpdatedMockPortfolioPosition() },
       percentGain: 0,
     };
@@ -380,7 +379,7 @@ describe('PortfolioService', () => {
       TEST: {
         industries: { TEST: getUpdatedMockPortfolioIndustry() },
         currentValue: 10,
-        totalCostBasis: 15,
+        totalCostBasis: 7,
         percentGain: 0,
       },
     };

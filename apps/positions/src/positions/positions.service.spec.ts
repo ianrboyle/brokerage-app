@@ -9,6 +9,14 @@ import { SectorsService } from '../sectors/sectors.service';
 import { IndustriesService } from '../industries/industries.service';
 import { Sector } from '../sectors/sector.entity';
 import { Industry } from '../industries/industries.entity';
+import { PortfolioService } from '../portfolio/portfolio.service';
+import {
+  PortfolioPosition,
+  PortfolioIndustry,
+  PortfolioSectors,
+} from '../portfolio/dtos/portfolio-dto';
+import { PositionSqlQueryResult } from './dtos/position-sector-sql-query-result.dto';
+import exp from 'constants';
 
 describe('PositionsService', () => {
   let service: PositionsService;
@@ -16,6 +24,8 @@ describe('PositionsService', () => {
   let fakeCompanyProfilesServiceProxy: Partial<CompanyProfilesProxy>;
   let fakeSectorsService: Partial<SectorsService>;
   let fakeIndustriesService: Partial<IndustriesService>;
+  let fakePortfolioService: Partial<PortfolioService>;
+
   beforeEach(async () => {
     fakePositionsRepo = {
       create: () => {
@@ -28,6 +38,9 @@ describe('PositionsService', () => {
           industryId: 1,
           companyProfileId: 1234,
         });
+      },
+      getPositionsBySector: () => {
+        return Promise.resolve(getMockPositionSqlQueryResult());
       },
     };
 
@@ -65,6 +78,11 @@ describe('PositionsService', () => {
         return Promise.resolve(industry);
       },
     };
+    fakePortfolioService = {
+      mapPortfolioSectors: () => {
+        return getUpdatedMockPortfolioSectors();
+      },
+    };
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         // Import the necessary modules
@@ -99,6 +117,7 @@ describe('PositionsService', () => {
           provide: IndustriesService,
           useValue: fakeIndustriesService,
         },
+        PortfolioService,
       ],
     }).compile();
 
@@ -123,6 +142,28 @@ describe('PositionsService', () => {
     expect(position.user).toEqual(mockUserOne);
   });
 
+  it('should get positions by sector', async () => {
+    const portfolioSectors = await service.getPositionPortfolioSectors(1);
+
+    expect(portfolioSectors).toBeDefined();
+    for (const sectorName in portfolioSectors) {
+      const sector = portfolioSectors[sectorName];
+      expect(sector).toBeDefined();
+      expect(sector.currentValue).toBeDefined();
+      expect(sector.industries).toBeDefined();
+      for (const industryName in sector.industries) {
+        const industry = sector.industries[industryName];
+        expect(industry).toBeDefined();
+        const positions = industry.positions;
+        expect(positions).toBeDefined();
+        for (const symbol in positions) {
+          const position = positions[symbol];
+          expect(position).toBeDefined();
+        }
+      }
+    }
+  });
+
   const mockUserOne: User = {
     id: 1,
     email: 'email@test.com',
@@ -139,5 +180,119 @@ describe('PositionsService', () => {
     sector: '',
     country: '',
     isCustomProfile: false,
+  };
+
+  const getUpdatedMockPortfolioPosition = (): PortfolioPosition => {
+    return {
+      companyName: 'Test one',
+      currentValue: 10,
+      totalCostBasis: 7,
+      percentGain: 42.86,
+      quantity: 2,
+    };
+  };
+
+  const getUpdatedMockPortfolioIndustry = (): PortfolioIndustry => {
+    return {
+      currentValue: 10,
+      totalCostBasis: 7,
+      positions: { TEST: getUpdatedMockPortfolioPosition() },
+      percentGain: 0,
+    };
+  };
+
+  const getUpdatedMockPortfolioSectors = (): PortfolioSectors => {
+    return {
+      TEST: {
+        industries: { TEST: getUpdatedMockPortfolioIndustry() },
+        currentValue: 10,
+        totalCostBasis: 7,
+        percentGain: 0,
+      },
+    };
+  };
+
+  const getMockPositionSqlQueryResult = (): PositionSqlQueryResult[] => {
+    return [
+      {
+        sectorId: 1,
+        sectorName: 'Technology',
+        industryName: 'Software',
+        symbol: 'AAPL',
+        currentValue: 100,
+        positionId: 101,
+        industryId: 1,
+        totalCostBasis: 10,
+        companyName: 'Apple Inc.',
+        quantity: 10,
+        percentGain: 900.0,
+      },
+      {
+        sectorId: 2,
+        sectorName: 'Finance',
+        industryName: 'Banking',
+        symbol: 'JPM',
+        currentValue: 10,
+        positionId: 102,
+        industryId: 3,
+        totalCostBasis: 5,
+        companyName: 'JPMorgan Chase & Co.',
+        quantity: 2,
+        percentGain: 100,
+      },
+      {
+        sectorId: 1,
+        sectorName: 'Technology',
+        industryName: 'Computers',
+        symbol: 'MSFT',
+        currentValue: 50,
+        positionId: 103,
+        industryId: 2,
+        totalCostBasis: 100,
+        companyName: 'Microsoft.',
+        quantity: 2,
+        percentGain: -50,
+      },
+      {
+        sectorId: 101,
+        sectorName: 'Test sector',
+        industryName: 'Test industry one',
+        symbol: 'TEST1',
+        currentValue: 10,
+        positionId: 104,
+        industryId: 101,
+        totalCostBasis: 5,
+        companyName: 'Test company.',
+        quantity: 1,
+        percentGain: 100,
+      },
+      {
+        sectorId: 101,
+        sectorName: 'Test sector',
+        industryName: 'Test industry two',
+        symbol: 'TEST2',
+        currentValue: 10,
+        positionId: 105,
+        industryId: 102,
+        totalCostBasis: 7,
+        companyName: 'TEST2.',
+        quantity: 2,
+        percentGain: 42.86,
+      },
+      {
+        sectorId: 101,
+        sectorName: 'Test sector',
+        industryName: 'Test industry two',
+        symbol: 'TEST3',
+        currentValue: 10,
+        positionId: 106,
+        industryId: 102,
+        totalCostBasis: 15,
+        companyName: 'TEST3.',
+        quantity: 3,
+        percentGain: -33.33,
+      },
+      // Add more dummy data as needed
+    ];
   };
 });

@@ -12,8 +12,6 @@ import { PositionsService } from './positions.service';
 import { CreatePositionDto } from '../dto/create-position.dto';
 import { UpdatePositionDto } from '../dto/update-position.dto';
 import { CurrentUser, JwtAuthGuard, Position, User } from '@app/common';
-import { PositionDto } from '../dto/position-dto';
-import { Serialize } from '@app/common';
 
 @UseGuards(JwtAuthGuard)
 @Controller('positions')
@@ -38,7 +36,9 @@ export class PositionsController {
   }
   @Get('/sectors')
   async getPositionsBySector(@CurrentUser() user: User) {
-    const positions = await this.positionsService.getPositionsBySector(user.id);
+    const positions = await this.positionsService.getPositionPortfolioSectors(
+      user.id,
+    );
     return positions;
   }
 

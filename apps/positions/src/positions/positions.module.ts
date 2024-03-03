@@ -17,6 +17,7 @@ import { CompanyProfilesProxy } from '../company-profiles.proxy';
 import { SectorsModule } from '../sectors/sectors.module';
 import { IndustriesModule } from '../industries/industries.module';
 import { Industry } from '../industries/industries.entity';
+import { PortfolioService } from '../portfolio/portfolio.service';
 
 @Module({
   imports: [
@@ -61,6 +62,11 @@ import { Industry } from '../industries/industries.entity';
     IndustriesModule,
   ],
   controllers: [PositionsController],
-  providers: [PositionsService, PositionsRepository, CompanyProfilesProxy],
+  providers: [
+    PositionsService,
+    PositionsRepository,
+    CompanyProfilesProxy,
+    PortfolioService,
+  ],
 })
 export class PositionsModule {}

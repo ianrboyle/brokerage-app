@@ -7,7 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 @Injectable()
 export class PositionsRepository extends AbstractRepository<Position> {
   protected readonly logger = new Logger(PositionsRepository.name);
-
+  CURRENT_VALUE = '(position."quantity" * c."price")';
+  TOTAL_COST_BASIS = '(position."quantity" * position."costPerShare")';
+  PERCENT_GAIN = `((${this.CURRENT_VALUE} - ${this.TOTAL_COST_BASIS}) / ${this.TOTAL_COST_BASIS}) * 100`;
   constructor(
     @InjectRepository(Position)
     positionsRepository: Repository<Position>,
@@ -27,13 +29,13 @@ export class PositionsRepository extends AbstractRepository<Position> {
       .addSelect('s."sectorName"')
       .addSelect('i."industryName"')
       .addSelect('position."symbol" AS "symbol"')
-      .addSelect('(position."quantity" * c."price") AS "currentValue"')
+      .addSelect('position."quantity" AS "quantity"')
+      .addSelect(`${this.CURRENT_VALUE} AS "currentValue"`)
+      .addSelect(`${this.PERCENT_GAIN} AS "percentGain"`)
       .addSelect('position.id AS "positionId"')
       .addSelect('i.id AS "industryId"')
       .addSelect('c."companyName" AS "companyName"')
-      .addSelect(
-        '(position."quantity" * position."costPerShare") AS "totalCostBasis"',
-      )
+      .addSelect(`${this.TOTAL_COST_BASIS} AS "totalCostBasis"`)
       .where('"position"."userId" = :userId', { userId: userId })
       .getRawMany();
   }
