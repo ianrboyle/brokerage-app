@@ -23,11 +23,8 @@ export class SerializeInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
-    console.log('IS THIS HIT? ');
-    console.log(context);
     return next.handle().pipe(
       map((data: any) => {
-        console.log(data);
         return plainToInstance(this.dto, data, {
           excludeExtraneousValues: true,
         });

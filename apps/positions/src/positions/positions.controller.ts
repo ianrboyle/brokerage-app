@@ -41,6 +41,14 @@ export class PositionsController {
     );
     return positions;
   }
+  @Post('/insertmultiple')
+  createPositions(
+    @Body() body: CreatePositionDto[],
+    @CurrentUser() user: User,
+  ) {
+    const positions = this.positionsService.insertMultiple(body, user);
+    return positions;
+  }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {

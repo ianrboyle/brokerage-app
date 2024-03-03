@@ -19,25 +19,18 @@ export class PositionsService {
     private readonly industriesService: IndustriesService,
     private readonly portfolioService: PortfolioService,
   ) {}
-  async create(createPositionDto: CreatePositionDto, user: User) {
-    const profile = await this.companyProfilesProxy.getOrCreateCompanyProfile(
-      createPositionDto.symbol,
-    );
-
-    const sector = await this.sectorsService.getOrCreateSector(profile.sector);
-    const industry = await this.industriesService.getOrCreateIndustry(
-      profile.industry,
-      sector,
-    );
-
-    createPositionDto.companyProfileId = profile.id;
-    createPositionDto.industryId = industry.id;
-
-    const position = new Position({
-      ...createPositionDto,
-    });
-    position.user = user;
+  async create(positionDto: CreatePositionDto, user: User) {
+    const position = await this.setPositionDtoValues(positionDto, user);
     return await this.positionsRepository.create(position);
+  }
+
+  async insertMultiple(positionDtos: CreatePositionDto[], user: User) {
+    const positions: Position[] = [];
+    for (const positionDto of positionDtos) {
+      const position = await this.setPositionDtoValues(positionDto, user);
+      positions.push(position);
+    }
+    return await this.positionsRepository.createMultiple(positions);
   }
 
   findAll() {
@@ -69,5 +62,26 @@ export class PositionsService {
       this.portfolioService.mapPortfolioSectors(queryResult);
 
     return portfolioSectors;
+  }
+
+  private async setPositionDtoValues(
+    positionDto: CreatePositionDto,
+    user: User,
+  ) {
+    const profile = await this.companyProfilesProxy.getOrCreateCompanyProfile(
+      positionDto.symbol,
+    );
+
+    const sector = await this.sectorsService.getOrCreateSector(profile.sector);
+    const industry = await this.industriesService.getOrCreateIndustry(
+      profile.industry,
+      sector,
+    );
+    return new Position({
+      ...positionDto,
+      user: user,
+      companyProfileId: profile.id,
+      industryId: industry.id,
+    });
   }
 }
