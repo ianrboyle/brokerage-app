@@ -10,13 +10,7 @@ import { IndustriesService } from '../industries/industries.service';
 import { Sector } from '../sectors/sector.entity';
 import { Industry } from '../industries/industries.entity';
 import { PortfolioService } from '../portfolio/portfolio.service';
-import {
-  PortfolioPosition,
-  PortfolioIndustry,
-  PortfolioSectors,
-} from '../portfolio/dtos/portfolio-dto';
 import { PositionSqlQueryResult } from './dtos/position-sector-sql-query-result.dto';
-import exp from 'constants';
 
 describe('PositionsService', () => {
   let service: PositionsService;
@@ -24,7 +18,6 @@ describe('PositionsService', () => {
   let fakeCompanyProfilesServiceProxy: Partial<CompanyProfilesProxy>;
   let fakeSectorsService: Partial<SectorsService>;
   let fakeIndustriesService: Partial<IndustriesService>;
-  let fakePortfolioService: Partial<PortfolioService>;
 
   beforeEach(async () => {
     fakePositionsRepo = {
@@ -38,6 +31,29 @@ describe('PositionsService', () => {
           industryId: 1,
           companyProfileId: 1234,
         });
+      },
+      createMultiple: () => {
+        const positions = [
+          {
+            id: 1,
+            symbol: 'TEST1',
+            quantity: 10,
+            costPerShare: 100,
+            user: mockUserOne,
+            industryId: 1,
+            companyProfileId: 1234,
+          },
+          {
+            id: 2,
+            symbol: 'TEST2',
+            quantity: 10,
+            costPerShare: 100,
+            user: mockUserOne,
+            industryId: 1,
+            companyProfileId: 1234,
+          },
+        ];
+        return Promise.resolve(positions);
       },
       getPositionsBySector: () => {
         return Promise.resolve(getMockPositionSqlQueryResult());
@@ -78,11 +94,7 @@ describe('PositionsService', () => {
         return Promise.resolve(industry);
       },
     };
-    fakePortfolioService = {
-      mapPortfolioSectors: () => {
-        return getUpdatedMockPortfolioSectors();
-      },
-    };
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         // Import the necessary modules
@@ -164,6 +176,13 @@ describe('PositionsService', () => {
     }
   });
 
+  it('should insert multiple positions', async () => {
+    //TODO
+    const positionDtos = [mockCreatePositionDtoOne, mockCreatePositionDtoTwo];
+    const positions = service.insertMultiple(positionDtos, mockUserOne);
+    expect(positions).toBeDefined();
+  });
+
   const mockUserOne: User = {
     id: 1,
     email: 'email@test.com',
@@ -180,36 +199,6 @@ describe('PositionsService', () => {
     sector: '',
     country: '',
     isCustomProfile: false,
-  };
-
-  const getUpdatedMockPortfolioPosition = (): PortfolioPosition => {
-    return {
-      companyName: 'Test one',
-      currentValue: 10,
-      totalCostBasis: 7,
-      percentGain: 42.86,
-      quantity: 2,
-    };
-  };
-
-  const getUpdatedMockPortfolioIndustry = (): PortfolioIndustry => {
-    return {
-      currentValue: 10,
-      totalCostBasis: 7,
-      positions: { TEST: getUpdatedMockPortfolioPosition() },
-      percentGain: 0,
-    };
-  };
-
-  const getUpdatedMockPortfolioSectors = (): PortfolioSectors => {
-    return {
-      TEST: {
-        industries: { TEST: getUpdatedMockPortfolioIndustry() },
-        currentValue: 10,
-        totalCostBasis: 7,
-        percentGain: 0,
-      },
-    };
   };
 
   const getMockPositionSqlQueryResult = (): PositionSqlQueryResult[] => {
@@ -294,5 +283,20 @@ describe('PositionsService', () => {
       },
       // Add more dummy data as needed
     ];
+  };
+
+  const mockCreatePositionDtoOne: CreatePositionDto = {
+    symbol: 'TEST1',
+    costPerShare: 100,
+    quantity: 10,
+    companyProfileId: 0,
+    industryId: 0,
+  };
+  const mockCreatePositionDtoTwo: CreatePositionDto = {
+    symbol: 'TEST2',
+    costPerShare: 200.5,
+    quantity: 25,
+    companyProfileId: 0,
+    industryId: 0,
   };
 });
