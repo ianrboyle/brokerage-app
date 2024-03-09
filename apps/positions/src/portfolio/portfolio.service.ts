@@ -8,6 +8,7 @@ import {
   PortfolioSector,
   PortfolioSectors,
 } from '../portfolio/dtos/portfolio-dto';
+
 @Injectable()
 export class PortfolioService {
   constructor() {}
@@ -28,8 +29,6 @@ export class PortfolioService {
         position,
       );
     }
-
-    this.calculateGroupsPercentGain(portfolioSectors);
 
     return portfolioSectors;
   }
@@ -95,24 +94,15 @@ export class PortfolioService {
   ): PortfolioSector | PortfolioIndustry | PortfolioPosition {
     groupValue.currentValue += Number(position.currentValue);
     groupValue.totalCostBasis += Number(position.totalCostBasis);
-
+    if (!('companyName' in groupValue)) {
+      this.calculatePercentGain(groupValue);
+    }
     if ('companyName' in groupValue) {
       groupValue.companyName = position.companyName;
       groupValue.percentGain = Number(position.percentGain);
       groupValue.quantity = Number(position.quantity);
     }
     return groupValue;
-  }
-
-  calculateGroupsPercentGain(portfolioSectors: PortfolioSectors) {
-    for (const sectorName in portfolioSectors) {
-      const portfolioSector = portfolioSectors[sectorName];
-      this.calculatePercentGain(portfolioSector);
-      for (const industryName in portfolioSector.industries) {
-        const portfolioIndustry = portfolioSector.industries[industryName];
-        this.calculatePercentGain(portfolioIndustry);
-      }
-    }
   }
 
   calculatePercentGain(

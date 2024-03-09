@@ -1,32 +1,32 @@
-export class PortfolioSectors {
+export type PortfolioSectors = {
   [key: string]: PortfolioSector;
-}
+};
 
-export class PortfolioSector {
+export type PortfolioSector = {
   industries: { [key: string]: PortfolioIndustry };
   currentValue: number;
   totalCostBasis: number;
   percentGain: number;
-}
+};
 
-export class PortfolioIndustry {
+export type PortfolioIndustry = {
   currentValue: number;
   totalCostBasis: number;
   positions: { [key: string]: PortfolioPosition };
   percentGain: number;
-}
+};
 
-export class PositionGroup {
+export type PositionGroup = {
   [key: string]: PortfolioPosition;
-}
+};
 
-export class PortfolioPosition {
+export type PortfolioPosition = {
   companyName: string;
   currentValue: number;
   totalCostBasis: number;
   percentGain: number;
   quantity: number;
-}
+};
 
 export enum GroupType {
   SECTOR,
@@ -34,14 +34,14 @@ export enum GroupType {
   POSITION,
 }
 
-export interface GroupValuesFactory {
+export type GroupValuesFactory = {
   createPortfolioPosition: () => PortfolioPosition;
   createPortfolioIndustry: () => PortfolioIndustry;
   createPortfolioSector: () => PortfolioSector;
-}
+};
 
-export interface GroupValues {
+export type GroupValues = {
   portfolioSector: PortfolioSector;
   portfolioIndustry: PortfolioIndustry;
   portfolioPosition: PortfolioPosition;
-}
+};

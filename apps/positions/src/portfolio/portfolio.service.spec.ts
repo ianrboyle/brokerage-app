@@ -19,7 +19,6 @@ describe('PortfolioService', () => {
   let testSectorTotalPercentGain: number;
   let mockPortfolioSectorOne: PortfolioSector;
   let mockPortfolioIndustryOne: PortfolioIndustry;
-  let mockPortfolioSectors: PortfolioSectors;
   let mockUpdatePortfolioIndustry: PortfolioIndustry;
   beforeEach(async () => {
     mockPosition = getMockPosition();
@@ -30,7 +29,6 @@ describe('PortfolioService', () => {
     testSectorTotalPercentGain = getTestSectorTotalPercentGain();
     mockPortfolioSectorOne = getMockPortfolioSector();
     mockPortfolioIndustryOne = getMockPortfolioIndustry();
-    mockPortfolioSectors = getUpdatedMockPortfolioSectors();
     mockUpdatePortfolioIndustry = getUpdatedMockPortfolioIndustry();
     const module: TestingModule = await Test.createTestingModule({
       providers: [PortfolioService],
@@ -183,17 +181,6 @@ describe('PortfolioService', () => {
     expect(portfolioPosition.companyName).toEqual(mP.companyName);
   });
 
-  it('should caluclate all groups percent gains', () => {
-    const portfolioSectors = mockPortfolioSectors;
-    service.calculateGroupsPercentGain(portfolioSectors);
-    for (const sectorName in portfolioSectors) {
-      const sector = portfolioSectors[sectorName];
-      expect(sector.currentValue > 0).toBeTruthy();
-      expect(Math.abs(sector.percentGain) > 0).toBeTruthy();
-      expect(sector.industries['TEST'].currentValue > 0).toBeTruthy();
-      expect(Math.abs(sector.industries['TEST'].percentGain) > 0).toBeTruthy();
-    }
-  });
   it('should caluclate a single groups percent gains', () => {
     const portfolioIndustry = mockUpdatePortfolioIndustry;
     service.calculatePercentGain(portfolioIndustry);
@@ -371,17 +358,6 @@ describe('PortfolioService', () => {
       totalCostBasis: 7,
       positions: { TEST: getUpdatedMockPortfolioPosition() },
       percentGain: 0,
-    };
-  };
-
-  const getUpdatedMockPortfolioSectors = (): PortfolioSectors => {
-    return {
-      TEST: {
-        industries: { TEST: getUpdatedMockPortfolioIndustry() },
-        currentValue: 10,
-        totalCostBasis: 7,
-        percentGain: 0,
-      },
     };
   };
 
