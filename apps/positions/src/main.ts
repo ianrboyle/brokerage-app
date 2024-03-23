@@ -11,6 +11,11 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
   app.use(cookieParser());
   const configService = app.get(ConfigService);
+  app.enableCors({
+    origin: ['http://localhost:8080'],
+    methods: ['GET', 'POST'],
+    credentials: true,
+  });
   await app.listen(configService.get('HTTP_PORT'));
 }
 bootstrap();
