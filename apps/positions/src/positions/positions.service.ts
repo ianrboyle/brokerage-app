@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePositionDto } from '../dto/create-position.dto';
-import { UpdatePositionDto } from '../dto/update-position.dto';
+import { CreatePositionDto } from './dtos/create-position.dto';
+import { UpdatePositionDto } from './dtos/update-position.dto';
 import { PositionsRepository } from './positions.repository';
 import { Position, User } from '@app/common';
 import { CompanyProfilesProxy } from '../company-profiles.proxy';
@@ -9,6 +9,7 @@ import { IndustriesService } from '../industries/industries.service';
 import { FindOptionsWhere } from 'typeorm';
 import { PortfolioService } from '../portfolio/portfolio.service';
 import { PortfolioSectors } from '../portfolio/dtos/portfolio-dto';
+import { UpdatePositionIndustryDto } from './dtos/update-position-industry.dto';
 
 @Injectable()
 export class PositionsService {
@@ -48,6 +49,16 @@ export class PositionsService {
 
   update(id: number, updatePositionDto: UpdatePositionDto) {
     return this.positionsRepository.findOneAndUpdate({ id }, updatePositionDto);
+  }
+
+  updatePositionIndustry(
+    id: number,
+    updatePositionIndustryDto: UpdatePositionIndustryDto,
+  ) {
+    return this.positionsRepository.findOneAndUpdate(
+      { id },
+      updatePositionIndustryDto,
+    );
   }
 
   remove(id: number) {

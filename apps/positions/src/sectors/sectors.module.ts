@@ -6,6 +6,7 @@ import { SectorsRepository } from './sectors.repository';
 import { Industry } from '../industries/industries.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { SectorsController } from './sectors.controller';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import * as Joi from 'joi';
     }),
     LoggerModule,
   ],
+  controllers: [SectorsController],
   providers: [SectorsService, SectorsRepository],
   exports: [SectorsService, SectorsRepository],
 })

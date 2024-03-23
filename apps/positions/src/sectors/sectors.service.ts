@@ -16,6 +16,10 @@ export class SectorsService {
     return await this.sectorsRepository.findOne({ id });
   }
 
+  async findAll() {
+    return await this.sectorsRepository.find({});
+  }
+
   async find(sectorName: string) {
     const sectors = await this.sectorsRepository.find({ sectorName });
 

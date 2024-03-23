@@ -112,4 +112,11 @@ describe('IndustriesService', () => {
 
     expect(industry.id).toEqual(1);
   });
+
+  it('findAll should return all sectors', async () => {
+    const industries = await service.findAll();
+
+    expect(industries).toBeDefined();
+    expect(industries.length > 0).toBeTruthy();
+  });
 });

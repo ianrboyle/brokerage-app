@@ -9,9 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PositionsService } from './positions.service';
-import { CreatePositionDto } from '../dto/create-position.dto';
-import { UpdatePositionDto } from '../dto/update-position.dto';
+import { CreatePositionDto } from './dtos/create-position.dto';
+import { UpdatePositionDto } from './dtos/update-position.dto';
 import { CurrentUser, JwtAuthGuard, Position, User } from '@app/common';
+import { UpdatePositionIndustryDto } from './dtos/update-position-industry.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('positions')
@@ -61,6 +62,17 @@ export class PositionsController {
     @Body() updatePositionDto: UpdatePositionDto,
   ) {
     return this.positionsService.update(+id, updatePositionDto);
+  }
+
+  @Patch(':id')
+  updatePositionSector(
+    @Param('id') id: string,
+    @Body() updatePositionIndustryDto: UpdatePositionIndustryDto,
+  ) {
+    return this.positionsService.updatePositionIndustry(
+      +id,
+      updatePositionIndustryDto,
+    );
   }
 
   @Delete(':id')

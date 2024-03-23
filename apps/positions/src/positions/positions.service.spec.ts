@@ -4,13 +4,14 @@ import { PositionsRepository } from './positions.repository';
 import { COMPANY_PROFILES_SERVICE, User } from '@app/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CompanyProfilesProxy } from '../company-profiles.proxy';
-import { CreatePositionDto } from '../dto/create-position.dto';
+import { CreatePositionDto } from './dtos/create-position.dto';
 import { SectorsService } from '../sectors/sectors.service';
 import { IndustriesService } from '../industries/industries.service';
 import { Sector } from '../sectors/sector.entity';
 import { Industry } from '../industries/industries.entity';
 import { PortfolioService } from '../portfolio/portfolio.service';
 import { PositionSqlQueryResult } from './dtos/position-sector-sql-query-result.dto';
+import { UpdatePositionIndustryDto } from './dtos/update-position-industry.dto';
 
 describe('PositionsService', () => {
   let service: PositionsService;
@@ -57,6 +58,18 @@ describe('PositionsService', () => {
       },
       getPositionsBySector: () => {
         return Promise.resolve(getMockPositionSqlQueryResult());
+      },
+
+      findOneAndUpdate: () => {
+        return Promise.resolve({
+          id: 2,
+          symbol: 'TEST2',
+          quantity: 10,
+          costPerShare: 100,
+          user: mockUserOne,
+          industryId: 123456,
+          companyProfileId: 1234,
+        });
       },
     };
 
@@ -181,6 +194,23 @@ describe('PositionsService', () => {
     const positionDtos = [mockCreatePositionDtoOne, mockCreatePositionDtoTwo];
     const positions = service.insertMultiple(positionDtos, mockUserOne);
     expect(positions).toBeDefined();
+  });
+
+  it('should update a positions industry', async () => {
+    //TODO
+    const positionId = 2;
+    const newIndustryId = 123456;
+    const industryDto: UpdatePositionIndustryDto = {
+      industryId: newIndustryId,
+    };
+
+    const updatedPosition = service.updatePositionIndustry(
+      positionId,
+      industryDto,
+    );
+    expect(updatedPosition).toBeDefined();
+    // DOES THIS REALLY TEST ANYTHING?
+    expect((await updatedPosition).industryId).toEqual(newIndustryId);
   });
 
   const mockUserOne: User = {

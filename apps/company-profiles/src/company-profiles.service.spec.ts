@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CompanyProfilesService } from './company-profiles.service';
 import { FinancialModelingPrepService } from './financialModelingPrep/financial-modeling-prep.service';
 import { CompanyProfile, CreateCompanyProfileDto } from '@app/common';
-import { CreatePositionDto } from '../../positions/src/dto/create-position.dto';
+import { CreatePositionDto } from '../../positions/src/positions/dtos/create-position.dto';
 import { Profile } from './financialModelingPrep/models/profile';
 import { CompanyProfilesRepository } from './company-profile.repository';
 import { EntityManager } from 'typeorm';

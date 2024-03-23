@@ -70,6 +70,12 @@ describe('SectorsService', () => {
 
     expect(sector.sectorName).toEqual(sectorName);
   });
+  it('findAll should return all sectors', async () => {
+    const sectors = await service.findAll();
+
+    expect(sectors).toBeDefined();
+    expect(sectors.length > 0).toBeTruthy();
+  });
 
   it('find should return null', async () => {
     fakeSectorsRepo.find = () => {

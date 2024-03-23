@@ -27,6 +27,10 @@ export class IndustriesService {
     return !industries || industries.length <= 0 ? null : industries[0];
   }
 
+  async findAll() {
+    return await this.industriesRepository.find({});
+  }
+
   async update(id: number, attrs: Partial<Industry>) {
     return this.industriesRepository.findOneAndUpdate({ id }, attrs);
   }

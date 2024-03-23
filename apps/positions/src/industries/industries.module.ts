@@ -5,6 +5,7 @@ import { IndustriesRepository } from './industries.repository';
 import { DatabaseModule, LoggerModule } from '@app/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { IndustriesController } from './industries.controller';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import * as Joi from 'joi';
     }),
     LoggerModule,
   ],
+  controllers: [IndustriesController],
   providers: [IndustriesService, IndustriesRepository],
   exports: [IndustriesService, IndustriesRepository],
 })
