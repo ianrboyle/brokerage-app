@@ -7,6 +7,7 @@ export type PortfolioSector = {
   currentValue: number;
   totalCostBasis: number;
   percentGain: number;
+  percentOfAccount: number;
 };
 
 export type PortfolioIndustry = {

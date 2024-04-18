@@ -17,7 +17,9 @@ export class PortfolioService {
     const portfolioSectors: PortfolioSectors = {};
     const groupValuesFactory = this.createGroupValuesFactory();
 
+    let accountValue = 0;
     for (const position of result) {
+      accountValue += Number(position.currentValue);
       const { portfolioSector, portfolioIndustry, portfolioPosition } =
         this.createGroupValues(portfolioSectors, groupValuesFactory, position);
 
@@ -30,6 +32,7 @@ export class PortfolioService {
       );
     }
 
+    this.calculatePercentOfAccount(portfolioSectors, accountValue);
     return portfolioSectors;
   }
   createGroupValues(
@@ -105,6 +108,16 @@ export class PortfolioService {
     return groupValue;
   }
 
+  calculatePercentOfAccount(
+    portfolioSectors: PortfolioSectors,
+    accountValue: number,
+  ) {
+    for (const sectorName in portfolioSectors) {
+      const sector = portfolioSectors[sectorName];
+      sector.percentOfAccount = (sector.currentValue / accountValue) * 100;
+    }
+  }
+
   calculatePercentGain(
     groupValue: PortfolioSector | PortfolioIndustry | PortfolioPosition,
   ) {
@@ -134,6 +147,7 @@ export class PortfolioService {
         currentValue: 0,
         totalCostBasis: 0,
         percentGain: 0,
+        percentOfAccount: 0,
       }),
     };
   };

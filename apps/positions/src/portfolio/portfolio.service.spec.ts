@@ -187,6 +187,19 @@ describe('PortfolioService', () => {
     expect(Math.abs(portfolioIndustry.percentGain) > 0).toBeTruthy();
   });
 
+  it('should calculate each sectors percent of account and sum of percents should equal 100', () => {
+    const portfolioSectors = service.mapPortfolioSectors(
+      mockPositionSqlQueryResult,
+    );
+    let totalPercent = 0;
+    for (const sectorName in portfolioSectors) {
+      const sector = portfolioSectors[sectorName];
+      totalPercent += sector.percentOfAccount;
+    }
+
+    expect(Math.ceil(totalPercent)).toBe(100);
+  });
+
   const getMockPositionSqlQueryResult = (): PositionSqlQueryResult[] => {
     return [
       {
@@ -321,6 +334,7 @@ describe('PortfolioService', () => {
         currentValue: 0,
         totalCostBasis: 0,
         percentGain: 0,
+        percentOfAccount: 0,
       }),
     };
   };
@@ -340,6 +354,7 @@ describe('PortfolioService', () => {
       currentValue: 0,
       totalCostBasis: 0,
       percentGain: 0,
+      percentOfAccount: 0,
     };
   };
   const getUpdatedMockPortfolioPosition = (): PortfolioPosition => {
