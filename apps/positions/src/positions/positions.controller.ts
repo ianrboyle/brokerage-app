@@ -47,13 +47,21 @@ export class PositionsController {
     @Body() body: CreatePositionDto[],
     @CurrentUser() user: User,
   ) {
+    console.log('Inserting Multiple: ', body);
     const positions = this.positionsService.insertMultiple(body, user);
+
     return positions;
   }
 
+  @Get('/costequalszero')
+  async findPositionsWhereCostEqualsZero(@CurrentUser() user: User) {
+    console.log('does this even get hit??');
+    return await this.positionsService.getPositionsWhereCostEqualsZero(user.id);
+  }
+
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.positionsService.findOne(+id);
+  async findOne(@CurrentUser() user: User, @Param('id') id: string) {
+    return await this.positionsService.findOne(parseInt(id), user.id);
   }
 
   @Patch(':id')
@@ -65,7 +73,7 @@ export class PositionsController {
   }
 
   @Patch(':id')
-  updatePositionSector(
+  updatePositionIndustry(
     @Param('id') id: string,
     @Body() updatePositionIndustryDto: UpdatePositionIndustryDto,
   ) {

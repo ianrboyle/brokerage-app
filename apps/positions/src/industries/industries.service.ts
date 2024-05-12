@@ -3,6 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { Industry } from './industries.entity';
 import { Sector } from '../sectors/sector.entity';
 import { IndustriesRepository } from './industries.repository';
+import {
+  GetIndustryDto,
+  GetIndustrySqlResult,
+} from './dtos/get-industries.dto';
 
 @Injectable()
 export class IndustriesService {
@@ -30,6 +34,10 @@ export class IndustriesService {
   async findAll() {
     return await this.industriesRepository.find({});
   }
+  async getIndustriesBySectorId(sectorId: number) {
+    const queryResult = await this.industriesRepository.getIndustries(sectorId);
+    return this.mapIndustries(queryResult);
+  }
 
   async update(id: number, attrs: Partial<Industry>) {
     return this.industriesRepository.findOneAndUpdate({ id }, attrs);
@@ -46,5 +54,19 @@ export class IndustriesService {
       return await this.create(industryName, sector);
     }
     return industry;
+  }
+
+  private mapIndustries(queryResult: GetIndustrySqlResult[]): GetIndustryDto[] {
+    const industries: GetIndustryDto[] = [];
+    for (const indSql of queryResult) {
+      const ind: GetIndustryDto = {
+        industryId: indSql.industryId,
+        industryName: indSql.industryName,
+        sectorId: indSql.sectorId,
+      };
+      industries.push(ind);
+    }
+
+    return industries;
   }
 }

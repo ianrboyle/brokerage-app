@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Delete,
+  Param,
+} from '@nestjs/common';
 import { SectorsService } from './sectors.service';
 import { CreateSectorDto } from './dtos/create-sector.dto';
 import { SectorDto } from './dtos/sector.dto';
-import { Serialize } from '@app/common';
+import { JwtAuthGuard, Serialize } from '@app/common';
 
+@UseGuards(JwtAuthGuard)
 @Controller('sectors')
 @Serialize(SectorDto)
 export class SectorsController {
@@ -11,12 +20,18 @@ export class SectorsController {
 
   @Post()
   async create(@Body() createSectorDto: CreateSectorDto) {
-    return await this.sectorsService.create(createSectorDto.sectorName);
+    return await this.sectorsService.getOrCreateSector(
+      createSectorDto.sectorName,
+    );
   }
 
   @Get()
   async findAll() {
     const sectors = await this.sectorsService.findAll();
     return sectors;
+  }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.sectorsService.remove(+id);
   }
 }

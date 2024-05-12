@@ -17,9 +17,7 @@ export class PortfolioService {
     const portfolioSectors: PortfolioSectors = {};
     const groupValuesFactory = this.createGroupValuesFactory();
 
-    let accountValue = 0;
     for (const position of result) {
-      accountValue += Number(position.currentValue);
       const { portfolioSector, portfolioIndustry, portfolioPosition } =
         this.createGroupValues(portfolioSectors, groupValuesFactory, position);
 
@@ -32,7 +30,7 @@ export class PortfolioService {
       );
     }
 
-    this.calculatePercentOfAccount(portfolioSectors, accountValue);
+    PortfolioSector.calculateSectorPercentOfAccount(portfolioSectors);
     return portfolioSectors;
   }
   createGroupValues(
@@ -84,11 +82,13 @@ export class PortfolioService {
       portfolioIndustry,
       position,
     ) as PortfolioIndustry;
+    portfolioSector.industries[industryName].industryName = industryName;
 
     portfolioSectors[sectorName] = this.updateGroupValue(
       portfolioSector,
       position,
     ) as PortfolioSector;
+    portfolioSector.sectorName = sectorName;
   }
 
   updateGroupValue(
@@ -97,34 +97,39 @@ export class PortfolioService {
   ): PortfolioSector | PortfolioIndustry | PortfolioPosition {
     groupValue.currentValue += Number(position.currentValue);
     groupValue.totalCostBasis += Number(position.totalCostBasis);
-    if (!('companyName' in groupValue)) {
-      this.calculatePercentGain(groupValue);
+    // if (!('companyName' in groupValue)) {
+    //   this.calculatePercentGain(groupValue);
+    // }
+    this.calculatePercentGain(groupValue);
+    if ('sectorId' in groupValue) {
+      groupValue.sectorId = position.sectorId;
+    }
+    if ('industryId' in groupValue) {
+      groupValue.industryId = position.industryId;
     }
     if ('companyName' in groupValue) {
       groupValue.companyName = position.companyName;
-      groupValue.percentGain = Number(position.percentGain);
+      // groupValue.percentGain = Number(position.percentGain);
       groupValue.quantity = Number(position.quantity);
+      groupValue.positionId = position.positionId;
     }
     return groupValue;
-  }
-
-  calculatePercentOfAccount(
-    portfolioSectors: PortfolioSectors,
-    accountValue: number,
-  ) {
-    for (const sectorName in portfolioSectors) {
-      const sector = portfolioSectors[sectorName];
-      sector.percentOfAccount = (sector.currentValue / accountValue) * 100;
-    }
   }
 
   calculatePercentGain(
     groupValue: PortfolioSector | PortfolioIndustry | PortfolioPosition,
   ) {
-    groupValue.percentGain =
-      ((groupValue.currentValue - groupValue.totalCostBasis) /
-        groupValue.totalCostBasis) *
-      100;
+    if (groupValue.totalCostBasis != 0) {
+      groupValue.percentGain = parseFloat(
+        (
+          ((groupValue.currentValue - groupValue.totalCostBasis) /
+            groupValue.totalCostBasis) *
+          100
+        ).toFixed(2),
+      );
+    } else {
+      groupValue.percentGain = 1;
+    }
   }
 
   createGroupValuesFactory = (): GroupValuesFactory => {
@@ -135,12 +140,16 @@ export class PortfolioService {
         totalCostBasis: 0,
         percentGain: 0,
         quantity: 0,
+        positionId: 0,
       }),
       createPortfolioIndustry: () => ({
         positions: {},
         currentValue: 0,
         totalCostBasis: 0,
         percentGain: 0,
+        industryName: '',
+        percentOfAccount: 0,
+        industryId: 0,
       }),
       createPortfolioSector: () => ({
         industries: {},
@@ -148,6 +157,8 @@ export class PortfolioService {
         totalCostBasis: 0,
         percentGain: 0,
         percentOfAccount: 0,
+        sectorId: 0,
+        sectorName: '',
       }),
     };
   };

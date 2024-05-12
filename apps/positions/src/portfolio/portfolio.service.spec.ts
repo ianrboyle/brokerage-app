@@ -328,6 +328,9 @@ describe('PortfolioService', () => {
         currentValue: 0,
         totalCostBasis: 0,
         percentGain: 0,
+        industryName: '',
+        percentOfAccount: 0,
+        industryId: 0,
       }),
       createPortfolioSector: () => ({
         industries: {},
@@ -335,6 +338,8 @@ describe('PortfolioService', () => {
         totalCostBasis: 0,
         percentGain: 0,
         percentOfAccount: 0,
+        sectorId: 0,
+        sectorName: '',
       }),
     };
   };
@@ -345,6 +350,9 @@ describe('PortfolioService', () => {
       totalCostBasis: 0,
       positions: {},
       percentGain: 0,
+      industryName: '',
+      percentOfAccount: 0,
+      industryId: 0,
     };
   };
 
@@ -355,6 +363,8 @@ describe('PortfolioService', () => {
       totalCostBasis: 0,
       percentGain: 0,
       percentOfAccount: 0,
+      sectorId: 0,
+      sectorName: '',
     };
   };
   const getUpdatedMockPortfolioPosition = (): PortfolioPosition => {
@@ -373,6 +383,9 @@ describe('PortfolioService', () => {
       totalCostBasis: 7,
       positions: { TEST: getUpdatedMockPortfolioPosition() },
       percentGain: 0,
+      industryName: 'industry',
+      percentOfAccount: 0,
+      industryId: 0,
     };
   };
 

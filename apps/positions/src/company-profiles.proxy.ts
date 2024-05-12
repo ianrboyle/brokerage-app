@@ -15,7 +15,6 @@ export class CompanyProfilesProxy {
     if (!profile) {
       return await this.createCompanyProfile(symbol);
     }
-
     return profile;
   }
   private async getCompanyProfile(symbol: string): Promise<CompanyProfile> {
@@ -31,6 +30,21 @@ export class CompanyProfilesProxy {
     const createProfileResponse = this.companyProfilesService.send(
       'create_new_profile',
       symbol,
+    );
+
+    return await firstValueFrom<CompanyProfile>(createProfileResponse);
+  }
+  public async updateCompanyProfile(
+    id: number,
+    profile: CompanyProfile,
+  ): Promise<CompanyProfile> {
+    const partialProfile: Partial<CompanyProfile> = {
+      ...profile,
+    };
+    const data = { id: id, profile: partialProfile };
+    const createProfileResponse = this.companyProfilesService.send(
+      'update_company_profile',
+      data,
     );
 
     return await firstValueFrom<CompanyProfile>(createProfileResponse);

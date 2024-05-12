@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { Industry } from './industries.entity';
 import { IndustriesService } from './industries.service';
 import { IndustriesRepository } from './industries.repository';
-import { DatabaseModule, LoggerModule } from '@app/common';
-import { ConfigModule } from '@nestjs/config';
+import { AUTH_SERVICE, DatabaseModule, LoggerModule } from '@app/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { IndustriesController } from './industries.controller';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -22,6 +23,19 @@ import { IndustriesController } from './industries.controller';
       }),
     }),
     LoggerModule,
+    ClientsModule.registerAsync([
+      {
+        name: AUTH_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('AUTH_HOST'),
+            port: configService.get('AUTH_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+    ]),
   ],
   controllers: [IndustriesController],
   providers: [IndustriesService, IndustriesRepository],

@@ -10,4 +10,5 @@ export class PositionSqlQueryResult {
   companyName: string;
   quantity: number;
   percentGain: number;
+  costPerShare?: number;
 }

@@ -10,6 +10,9 @@ import { FindOptionsWhere } from 'typeorm';
 import { PortfolioService } from '../portfolio/portfolio.service';
 import { PortfolioSectors } from '../portfolio/dtos/portfolio-dto';
 import { UpdatePositionIndustryDto } from './dtos/update-position-industry.dto';
+import { PositionSqlQueryResult } from './dtos/position-sector-sql-query-result.dto';
+import { PositionDto } from './dtos/position-dto';
+// import { PositionDto } from './dtos/position-dto';
 
 @Injectable()
 export class PositionsService {
@@ -28,7 +31,11 @@ export class PositionsService {
   async insertMultiple(positionDtos: CreatePositionDto[], user: User) {
     const positions: Position[] = [];
     for (const positionDto of positionDtos) {
-      const position = await this.setPositionDtoValues(positionDto, user);
+      const position = await this.setPositionDtoValues(
+        positionDto,
+        user,
+        positionDto.lastPrice,
+      );
       positions.push(position);
     }
     return await this.positionsRepository.createMultiple(positions);
@@ -43,8 +50,30 @@ export class PositionsService {
     return await this.positionsRepository.find(whereClause);
   }
 
-  findOne(id: number) {
-    return this.positionsRepository.findOne({ id });
+  async getPositionsWhereCostEqualsZero(userId: number) {
+    const queryResult =
+      await this.positionsRepository.getPositionsBySector(userId);
+    console.log('QUERY!!!!!!', queryResult);
+    const filteredQuery = queryResult.filter(
+      (p) => Number(p.totalCostBasis) == 0,
+    );
+    console.log('filteredQuery!!!!!', filteredQuery);
+
+    const filteredPositions: PositionDto[] = [];
+    filteredQuery.forEach((p) => {
+      p.costPerShare = 0;
+      const mappedPosition = this.mapPositionDto(p);
+      filteredPositions.push(mappedPosition);
+    });
+    return filteredPositions;
+  }
+  async findOne(positionId: number, userId: number) {
+    const positionQueryResult = await this.positionsRepository.getPositionById(
+      positionId,
+      userId,
+    );
+    // return positionQueryResult;
+    return this.mapPositionDto(positionQueryResult);
   }
 
   update(id: number, updatePositionDto: UpdatePositionDto) {
@@ -78,11 +107,18 @@ export class PositionsService {
   private async setPositionDtoValues(
     positionDto: CreatePositionDto,
     user: User,
+    lastPrice?: number,
   ) {
-    const profile = await this.companyProfilesProxy.getOrCreateCompanyProfile(
+    let profile = await this.companyProfilesProxy.getOrCreateCompanyProfile(
       positionDto.symbol,
     );
-
+    if (lastPrice && lastPrice > 0) {
+      profile.price = lastPrice;
+      profile = await this.companyProfilesProxy.updateCompanyProfile(
+        profile.id,
+        profile,
+      );
+    }
     const sector = await this.sectorsService.getOrCreateSector(profile.sector);
     const industry = await this.industriesService.getOrCreateIndustry(
       profile.industry,
@@ -94,5 +130,32 @@ export class PositionsService {
       companyProfileId: profile.id,
       industryId: industry.id,
     });
+  }
+
+  private mapPositionDto(position: PositionSqlQueryResult): PositionDto {
+    let percentGain = 0;
+    if (Number(position.costPerShare) != 0) {
+      const totalCostBasis =
+        Number(position.quantity) * Number(position.costPerShare);
+      percentGain =
+        ((Number(position.currentValue) - totalCostBasis) / totalCostBasis) *
+        100;
+    }
+
+    const mappedPosition: PositionDto = {
+      id: position.positionId,
+      symbol: position.symbol,
+      quantity: Number(position.quantity),
+      costPerShare: Number(position.costPerShare),
+      industryId: position.industryId,
+      industryName: position.industryName,
+      sectorId: position.sectorId,
+      sectorName: position.sectorName,
+      percentGain: Number(percentGain),
+      totalCostBasis: Number(position.totalCostBasis),
+      companyName: position.companyName,
+      currentValue: Number(position.currentValue),
+    };
+    return mappedPosition;
   }
 }

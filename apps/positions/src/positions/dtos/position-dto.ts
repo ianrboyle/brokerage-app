@@ -1,5 +1,4 @@
-import { Expose, Transform } from 'class-transformer';
-import { IsOptional } from 'class-validator';
+import { Expose } from 'class-transformer';
 
 export class PositionDto {
   @Expose()
@@ -14,14 +13,22 @@ export class PositionDto {
   @Expose()
   costPerShare: number;
 
-  @IsOptional()
-  @Transform(({ obj }) => (obj.user ? obj.user.id : null))
-  @Expose()
-  userId: number;
-
-  @Expose()
-  companyProfileId: number;
-
   @Expose()
   industryId: number;
+  @Expose()
+  industryName: string;
+  @Expose()
+  sectorId: number;
+  @Expose()
+  sectorName: string;
+  @Expose()
+  companyName: string;
+
+  @Expose()
+  percentGain: number;
+
+  @Expose()
+  totalCostBasis: number;
+  @Expose()
+  currentValue: number;
 }

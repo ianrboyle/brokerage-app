@@ -12,6 +12,10 @@ export class CreatePositionDto {
 
   @IsOptional()
   @IsNumber()
+  lastPrice: number;
+
+  @IsOptional()
+  @IsNumber()
   companyProfileId: number;
 
   @IsOptional()

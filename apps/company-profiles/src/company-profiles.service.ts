@@ -18,7 +18,7 @@ export class CompanyProfilesService {
     private readonly companyProfilesRepository: CompanyProfilesRepository,
     private financialPrepModelingService: FinancialModelingPrepService,
   ) {}
-  async createNew(symbol: string) {
+  async createNew(symbol: string, lastPrice?: number) {
     const profile =
       await this.financialPrepModelingService.getCompanyProfile(symbol);
     if (!profile) {
@@ -28,7 +28,7 @@ export class CompanyProfilesService {
     const companyProfileDto: CreateCompanyProfileDto = {
       symbol: profile.symbol,
       companyName: profile.companyName,
-      price: profile?.price || 0,
+      price: profile?.price || lastPrice || 0,
       industry: profile.industry,
       sector: profile.sector,
       country: profile?.country,
@@ -75,6 +75,7 @@ export class CompanyProfilesService {
       if (!defaultProfile) {
         return await this.create(this.DEFAULT_PROFILE);
       }
+
       return defaultProfile;
     } catch (error) {
       throw new InternalServerErrorException(
@@ -93,5 +94,10 @@ export class CompanyProfilesService {
         `Failed to create custom company profile: ${createCompanyProfileDto}`,
       );
     }
+  };
+
+  updateCompanyProfile = async (id: number, attrs: Partial<CompanyProfile>) => {
+    console.log('UPDATE COMPANY PROFILE ****** ', id, attrs);
+    return await this.companyProfilesRepository.findOneAndUpdate({ id }, attrs);
   };
 }

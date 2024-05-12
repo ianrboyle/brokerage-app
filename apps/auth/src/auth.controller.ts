@@ -1,13 +1,15 @@
 import { Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { CurrentUser } from '@app/common';
+import { CurrentUser, Serialize } from '@app/common';
 import { Response } from 'express';
 import { User } from '../../../libs/common/src/entities/user.entity';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { UserDto } from './users/dto/user.dto';
 
 @Controller('auth')
+@Serialize(UserDto)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -18,7 +20,11 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const jwt = await this.authService.login(user, response);
-    response.send(jwt);
+    const userDto: UserDto = {
+      id: user.id,
+      email: user.email,
+    };
+    response.send({ user: userDto, jwt: jwt });
   }
 
   @Post('logout')
